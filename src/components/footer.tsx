@@ -1,6 +1,6 @@
 function Footer() {
   return (
-    <div className="footer w-100% h-[50px] bg-[#4D0000] flex items-center">
+    <div className="footer w-[100%] h-[50px] bg-[#4D0000] flex items-center">
       <span className="flex-1 flex justify-start ml-[30px]">
         Developed By James Anurak
       </span>
