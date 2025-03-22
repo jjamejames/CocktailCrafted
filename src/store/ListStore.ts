@@ -11,7 +11,7 @@ const CocktailStore = {
 export type CocktailType = {
   data: Drink[];
   loading: boolean;
-  error: null 
+  error: null | string
 };
 
 type UseCocktailListStore = {

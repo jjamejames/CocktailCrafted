@@ -7,23 +7,38 @@ import { useEffect, useState } from "react";
 import { HashLoader } from "react-spinners";
 
 function HomePage() {
-  const handleRandom = () => {};
   const [cocktail, setCocktail] = useState<CocktailType>({
     data: [],
     loading: true,
     error: null,
   });
-  const abortController = new AbortController();
-  const callData = async () => {
-    setCocktail({ data: [], loading: true, error: null });
-    const requests = Array.from({ length: 9 }, () => randomAPI.getRandom());
-    const responses = await Promise.all(requests);
-    const drinks = responses.flatMap((res) => res.data?.drinks || []);
-    setCocktail({ data: drinks, loading: false, error: null });
+
+  const callData = async (signal: AbortSignal) => {
+    try {
+      setCocktail({ data: [], loading: true, error: null });
+
+      const requests = Array.from({ length: 9 }, () => randomAPI.getRandom());
+      const responses = await Promise.all(requests);
+
+      const drinks = responses.flatMap((res) => res.data?.drinks || []);
+
+      if (!signal.aborted) {
+        setCocktail({ data: drinks, loading: false, error: null });
+      }
+    } catch (error) {
+      if (!signal.aborted) {
+        setCocktail({ data: [], loading: false, error: "Failed to fetch" });
+      }
+    }
   };
+
   useEffect(() => {
-    callData();
-    return abortController.abort();
+    const abortController = new AbortController();
+    callData(abortController.signal);
+
+    return () => {
+      abortController.abort();
+    };
   }, []);
 
   return (
