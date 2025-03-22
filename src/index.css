@@ -13,7 +13,12 @@
   font-size: 42px;
   color: #f2a333;
 }
-.header:hover{
+@media (max-width: 1038px) {
+  .tab {
+    height: 240px;
+  }
+}
+.header:hover {
   color: #eed119;
 }
 .header-nav {
@@ -41,4 +46,7 @@
   font-weight: 400;
   font-style: normal;
   -webkit-text-stroke: 2px #000000;
+}
+.result-home {
+  font-family: "Montserrat", sans-serif;
 }
