@@ -50,3 +50,18 @@
 .result-home {
   font-family: "Montserrat", sans-serif;
 }
+.backhome-butt {
+  font-family: "Montserrat", sans-serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.fav-text{
+  font-family: "Montserrat", sans-serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.detail{
+  font-family: "Montserrat", sans-serif;
+  font-style: italic;
+  color: #9C0000;
+}

@@ -1,5 +1,5 @@
 export interface DetailResponse{
-    drinks: Drink
+    drinks: Drink[]
 }
 export interface Drink {
     idDrink: string
@@ -18,7 +18,7 @@ export interface Drink {
     strInstructionsIT: string | null
     "strInstructionsZH-HANS": string | null
     "strInstructionsZH-HANT": string | null
-    strDrinkThumb: string | null
+    strDrinkThumb: string 
     strIngredient1: string | null
     strIngredient2: string | null
     strIngredient3: string | null

@@ -56,8 +56,8 @@ function HomePage() {
         </div>
         <RandomForm></RandomForm>
       </section>
-      <section className="result-home mt-5 mx-10">
-        <span className="text-4xl font-bold">Result : </span>
+      <section className="result-home mt-8 mx-30">
+        <div className="text-4xl font-bold mb-8">Result : </div>
         <div>
           {cocktail.loading && (
             <div className="h-[600px] flex justify-center items-center">
@@ -71,7 +71,7 @@ function HomePage() {
             </div>
           )}
           {!cocktail.loading && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 sm:grid-cols-1 md:grid-cols-2 gap-15">
               {cocktail?.data?.map((item) => {
                 return (
                   <CocktailCard data={item} key={item.idDrink}></CocktailCard>
@@ -80,6 +80,8 @@ function HomePage() {
             </div>
           )}
         </div>
+        <br />
+        <br />
       </section>
     </div>
   );

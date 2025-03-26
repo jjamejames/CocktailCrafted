@@ -8,6 +8,7 @@ const CocktailStore = {
     error: null
   },
 };
+
 export type CocktailType = {
   data: Drink[];
   loading: boolean;

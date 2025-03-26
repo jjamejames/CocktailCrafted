@@ -4,7 +4,7 @@ import Footer from "../components/footer";
 
 export default function RootLayOut() {
   return (
-    <div className="container mx-auto px-20">
+    <div className="container mx-auto">
       <Header></Header>
       <Outlet></Outlet>
       <Footer></Footer>
