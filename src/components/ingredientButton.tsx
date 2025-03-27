@@ -11,10 +11,10 @@ function IngredientButton({ data, onClick, isActive }: IngredientButtonProp) {
     <div className="flex flex-col">
       <button
         onClick={handleOnSubmit}
-        className={`ingre-button cursor-pointer my-2 rounded-2xl border-2 px-4 py-2 text-lg
+        className={`ingre-button cursor-pointer my-2 rounded-2xl border-2 px-4 py-2 text-lg hover:bg-[#4e0000b6]
           ${
             isActive
-              ? "bg-black text-white border-white"
+              ? "bg-black text-white border-white hover:bg-black"
               : "bg-[#4D0000] text-white border-[#9C0000]"
           }
         `}

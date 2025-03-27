@@ -14,8 +14,15 @@ export const ingredientsList = [
     "Apple Cider",
     "Grape Juice",
     "Egg",
-    "Chocolate",
+    "Triple sec",
     "Brandy",
     "Light Rum",
-    "Coffee"
+    "Coffee",
+    "Dry Vermouth",
+    "Dark rum",
+    "Amaretto",
+    "Tea",
+    "Apricot brandy",
+    "Southern Comfort",
+    "Johnnie Walker"
 ]
