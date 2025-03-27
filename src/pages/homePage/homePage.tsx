@@ -1,7 +1,7 @@
 import SearchForm from "../../components/searchForm/searchForm";
 import RandomForm from "../../components/randomForm";
 import { CocktailType } from "../../store/ListStore";
-import CocktailCard from "./cocktailCard";
+import CocktailCard from "../../components/cocktailCard";
 import { randomAPI } from "../../api";
 import { useEffect, useState } from "react";
 import { HashLoader } from "react-spinners";

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Drink } from "../interfaces/IRandom";
+import { DrinkForIngredients } from "../interfaces/IIngredients";
 
 const CocktailStore = {
   cocktail: {
@@ -8,7 +9,11 @@ const CocktailStore = {
     error: null
   },
 };
-
+export type cocktailTypeByIngredients = {
+  data: DrinkForIngredients[];
+  loading: boolean;
+  error: null | string
+}
 export type CocktailType = {
   data: Drink[];
   loading: boolean;

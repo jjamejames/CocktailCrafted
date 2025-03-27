@@ -65,3 +65,28 @@
   font-style: italic;
   color: #9C0000;
 }
+.ingre-button{
+  padding: 5px 15px;
+  font-family: "Montserrat", sans-serif;
+  font-style: italic;
+  font-weight: 300;
+}
+.ingredient-text{
+  font-family: "Montserrat", sans-serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.craft-font{
+  font-family: "Montserrat", sans-serif;
+  font-style: italic;
+  font-weight: 700;
+}
+.showmore{
+  font-family: "Montserrat", sans-serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.name{
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+}

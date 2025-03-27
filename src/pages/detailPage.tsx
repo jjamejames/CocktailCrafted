@@ -30,6 +30,7 @@ function DetailPage() {
   useEffect(() => {
     if (name) {
       callData(name);
+      window.scrollTo(0, 0);
     }
   }, [name]);
 
