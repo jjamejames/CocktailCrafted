@@ -1,33 +1,63 @@
-import SearchForm from "../../components/searchForm/searchForm";
-import RandomForm from "../../components/randomForm";
-import { CocktailType } from "../../store/ListStore";
-import CocktailCard from "../../components/cocktailCard";
-import { randomAPI } from "../../api";
+import SearchForm from "../components/searchForm/searchForm";
+import RandomForm from "../components/randomForm";
+import CocktailCard from "../components/cocktailCard";
+import { randomAPI } from "../api";
 import { useEffect, useState } from "react";
 import { HashLoader } from "react-spinners";
+import { Drink } from "../interfaces/IRandom";
+
+export interface CocktailProps {
+  data: Drink[];
+  loading: boolean;
+  error: null | string;
+  fav: { [id: string]: boolean };
+}
 
 function HomePage() {
-  const [cocktail, setCocktail] = useState<CocktailType>({
-    data: [],
-    loading: true,
-    error: null,
+  const [cocktail, setCocktail] = useState<CocktailProps>(() => {
+    const storeFavs = localStorage.getItem("favoritesCocktails");
+    return {
+      data: [],
+      loading: true,
+      error: null,
+      fav: storeFavs ? JSON.parse(storeFavs) : {},
+    };
   });
+
+  const toggleFavorite = (id: string) => {
+    const newFav = { ...cocktail.fav, [id]: !cocktail.fav[id] };
+    setCocktail((prev) => ({ ...prev, fav: newFav }));
+    localStorage.setItem("favoritesCocktails", JSON.stringify(newFav));
+  };
 
   const callData = async (signal: AbortSignal) => {
     try {
-      setCocktail({ data: [], loading: true, error: null });
+      setCocktail((prev) => ({ ...prev, loading: true }));
 
-      const requests = Array.from({ length: 9 }, () => randomAPI.getRandom());
+      const requests = Array.from({ length: 9 }, () => randomAPI.getRandom()); // 1st argument คือ object  array 2nd คือ mapfunction
       const responses = await Promise.all(requests);
-
       const drinks = responses.flatMap((res) => res.data?.drinks || []);
 
+      // โหลด favorites จาก localStorage
+      const storeFavs = localStorage.getItem("favoritesCocktails");
+      const favorites = storeFavs ? JSON.parse(storeFavs) : {};
       if (!signal.aborted) {
-        setCocktail({ data: drinks, loading: false, error: null });
+        setCocktail({
+          data: drinks,
+          loading: false,
+          error: null,
+          fav: favorites,
+        });
       }
+      // อัพเดต state ของ cocktails และ favorite
     } catch (error) {
       if (!signal.aborted) {
-        setCocktail({ data: [], loading: false, error: "Failed to fetch" });
+        setCocktail({
+          data: [],
+          loading: false,
+          error: "Failed to fetch",
+          fav: cocktail.fav,
+        });
       }
     }
   };
@@ -35,7 +65,6 @@ function HomePage() {
   useEffect(() => {
     const abortController = new AbortController();
     callData(abortController.signal);
-
     return () => {
       abortController.abort();
     };
@@ -71,10 +100,15 @@ function HomePage() {
             </div>
           )}
           {!cocktail.loading && (
-            <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 sm:grid-cols-1 md:grid-cols-2 gap-15">
+            <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 md:grid-cols-1 gap-15">
               {cocktail?.data?.map((item) => {
                 return (
-                  <CocktailCard data={item} key={item.idDrink}></CocktailCard>
+                  <CocktailCard
+                    data={item}
+                    key={item.idDrink}
+                    isFav={cocktail.fav?.[item.idDrink]}
+                    onToggleFav={() => toggleFavorite(item.idDrink)}
+                  ></CocktailCard>
                 );
               })}
             </div>

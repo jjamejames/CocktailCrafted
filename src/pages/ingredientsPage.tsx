@@ -1,33 +1,50 @@
 import { useEffect, useState } from "react";
 import { ingredientsList } from "../utils/ingredients";
-import { cocktailTypeByIngredients } from "../store/ListStore";
 import IngredientButton from "../components/ingredientButton";
 import { useNavigate } from "react-router";
 import { searchByIngredientsAPI } from "../api";
 import { Drink } from "../interfaces/IRandom";
 import { HashLoader } from "react-spinners";
 import CocktailIngredientCard from "../components/cocktailIngreCard";
+import { DrinkForIngredients } from "../interfaces/IIngredients";
+
+export type cocktailTypeByIngredients = {
+  data: DrinkForIngredients[];
+  loading: boolean;
+  error: null | string;
+  fav: { [id: string]: boolean };
+};
 
 function IngredientsPage() {
   const navigate = useNavigate();
   const handleButtonBack = () => {
     navigate("/");
   };
-  const [activeButton, setActiveButton] = useState<string>("Rum");
   const [term, setTerm] = useState<string>("Rum");
   const [showMore, setShowMore] = useState<number>(9);
   const handleOnClick = (data: string) => {
     setTerm(data);
-    setActiveButton(data);
     setShowMore(9);
   };
 
   const [cocktailByIngredients, setCocktailByIngredients] =
-    useState<cocktailTypeByIngredients>({
-      data: [],
-      loading: false,
-      error: null,
+    useState<cocktailTypeByIngredients>(() => {
+      const storeFavs = localStorage.getItem("favoritesCocktails");
+      return {
+        data: [],
+        loading: true,
+        error: null,
+        fav: storeFavs ? JSON.parse(storeFavs) : {},
+      };
     });
+  const toggleFavorite = (id: string) => {
+    const newFav = {
+      ...cocktailByIngredients.fav,
+      [id]: !cocktailByIngredients.fav[id],
+    };
+    setCocktailByIngredients((prev) => ({ ...prev, fav: newFav }));
+    localStorage.setItem("favoritesCocktails", JSON.stringify(newFav));
+  };
 
   const list = ingredientsList.map((item, index) => {
     return (
@@ -35,16 +52,32 @@ function IngredientsPage() {
         key={index}
         data={item}
         onClick={handleOnClick}
-        isActive={activeButton === item}
+        isActive={term === item}
       ></IngredientButton>
     );
   });
 
   const callData = async (term: string) => {
-    setCocktailByIngredients({ data: [], loading: true, error: null });
-    const res = await searchByIngredientsAPI.getCocktailByIngredients(term);
-    const res2 = res.data?.drinks as Drink[];
-    setCocktailByIngredients({ data: res2, loading: false, error: null });
+    try {
+      setCocktailByIngredients((prev) => ({ ...prev, loading: true }));
+      const res = await searchByIngredientsAPI.getCocktailByIngredients(term);
+      const res2 = res.data?.drinks as Drink[];
+      const storeFavs = localStorage.getItem("favoritesCocktails");
+      const favorites = storeFavs ? JSON.parse(storeFavs) : {};
+      setCocktailByIngredients({
+        data: res2,
+        loading: false,
+        error: null,
+        fav: favorites,
+      });
+    } catch (error) {
+      setCocktailByIngredients({
+        data: [],
+        loading: false,
+        error: "Failed to fetch data",
+        fav: cocktailByIngredients.fav,
+      });
+    }
   };
   useEffect(() => {
     callData(term);
@@ -97,6 +130,8 @@ function IngredientsPage() {
                         <CocktailIngredientCard
                           data={item}
                           key={item.idDrink}
+                          onToggleFav={() => toggleFavorite(item.idDrink)}
+                          isFav={cocktailByIngredients.fav?.[item.idDrink]}
                         ></CocktailIngredientCard>
                       );
                     })}

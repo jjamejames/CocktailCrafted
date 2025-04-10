@@ -8,7 +8,7 @@ interface IDetailResponse extends IResponse {
 }
 
 export const searchByIDAPI = {
-  getDetailByID: async (id: number):Promise<IDetailResponse> => {
+  getDetailByID: async (id: string):Promise<IDetailResponse> => {
     try {
       const res = await axios.get(
         `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`

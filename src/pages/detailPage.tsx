@@ -1,32 +1,71 @@
-import { useNavigate, useParams } from "react-router";
-import { searchByNameAPI } from "../api";
+import {  useNavigate, useParams } from "react-router";
+import { searchByNameAPI, searchByTypeAPI } from "../api";
 import { useEffect, useState } from "react";
 import { HashLoader } from "react-spinners";
-import { CocktailType } from "../store/ListStore";
-import Heart from "react-heart";
+import { CocktailProps } from "./homePage";
+import { DrinkForIngredients } from "../interfaces/IIngredients";
 
 function DetailPage() {
-  const [active, setActive] = useState(false);
-  const [detail, setDetail] = useState<CocktailType>({
-    data: [],
-    loading: true,
-    error: null,
+  const [detail, setDetail] = useState<CocktailProps>(() => {
+    const storeFavs = localStorage.getItem("favoritesCocktails");
+    return {
+      data: [],
+      loading: true,
+      error: null,
+      fav: storeFavs ? JSON.parse(storeFavs) : {},
+    };
   });
+  const [suggested, setSuggested] = useState<DrinkForIngredients[]>([]);
+  const toggleFavorite = (id: string) => {
+    const newFav = { ...detail.fav, [id]: !detail.fav[id] };
+    setDetail((prev) => ({ ...prev, fav: newFav }));
+    localStorage.setItem("favoritesCocktails", JSON.stringify(newFav));
+  };
   const navigate = useNavigate();
   const { name } = useParams();
   const callData = async (name: string) => {
     try {
-      setDetail({ data: [], loading: true, error: null });
+      setDetail((prev) => ({ ...prev, loading: true }));
       const res = await searchByNameAPI.getDetailByName(name);
       const drinks = res.data?.drinks || [];
-      setDetail({ data: drinks, loading: false, error: null });
+      const storeFavs = localStorage.getItem("favoritesCocktails");
+      const favorites = storeFavs ? JSON.parse(storeFavs) : {};
+      setDetail({ data: drinks, loading: false, error: null, fav: favorites });
+      if (drinks[0]?.strCategory) {
+        const suggestions = await searchByTypeAPI.getCocktailByType(
+          drinks[0].strCategory
+        );
+        const drinksSuggested = suggestions.data?.drinks || [];
+        setSuggested(drinksSuggested);
+      }
     } catch (error) {
-      setDetail({ data: [], loading: false, error: "Failed to fetch data" });
+      setDetail({
+        data: [],
+        loading: false,
+        error: "Failed to fetch data",
+        fav: detail.fav,
+      });
     }
   };
   const handleButtonBack = () => {
     navigate("/");
   };
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const itemsPerPage = 3;
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex + itemsPerPage >= suggested.length
+        ? 0
+        : prevIndex + itemsPerPage
+    );
+  }; // ถ้า Next แล้วเลย array → reset ไปที่ index 0
+  const handleBack = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex - itemsPerPage < 0
+        ? Math.max(suggested.length - itemsPerPage, 0)
+        : prevIndex - itemsPerPage
+    );
+  }; // ถ้า Back แล้วต่ำกว่า 0 → ไปที่ชุดสุดท้ายแทน
   useEffect(() => {
     if (name) {
       callData(name);
@@ -36,10 +75,10 @@ function DetailPage() {
 
   return (
     <div>
-      <section className="mx-[95px] my-[30px] w-auto h-auto">
+      <section className="mx-[95px] my-[40px] w-auto h-auto">
         <button
           onClick={handleButtonBack}
-          className="bg-[#9C0000] rounded-xl mb-[30px] hover:cursor-pointer hover:bg-[#4D0000]"
+          className="bg-[#9C0000] rounded-xl mb-[40px] hover:cursor-pointer hover:bg-[#4D0000]"
         >
           <div className="backhome-butt my-2 mx-3 text-[24px] text-white">
             Back Home
@@ -58,22 +97,26 @@ function DetailPage() {
             </div>
           )}
           {!detail.loading && (
-            <div className="grid grid-cols-2  w-auto">
-              <div className="img-detail flex flex-col mr-[10px]">
+            <div className="grid grid-cols-2 w-auto gap-10">
+              <div className="img-detail flex flex-col mr-[10px] max-w-[550px]">
                 <img
-                  className="w-[500px] h-[500px] rounded-2xl"
+                  className="w-[auto] h-[auto] rounded-2xl"
                   src={detail.data[0]?.strDrinkThumb}
                 ></img>
-                <button
-                  className="bg-[#e0e0e0] my-3 self-start w-[500px] flex justify-center items-center rounded-2xl hover:bg-[#cecccc] hover:cursor-pointer"
-                  onClick={() => setActive(!active)}
-                >
-                  <Heart isActive={active} className="h-[28px] w-[28px]" />
-                  <span className="fav-text mx-1 my-3 text-[32px] text-[#9C0000]">
-                    Save to my favorite
-                  </span>
-                  <Heart isActive={active} className="h-[28px] w-[28px]" />
-                </button>
+                <div className="flex flex-col w-auto">
+                  <button
+                    onClick={() => toggleFavorite(detail.data[0]?.idDrink)}
+                    className="bg-[#e0e0e0] text-[32px] my-3 flex justify-center items-center rounded-2xl hover:bg-[#cecccc] hover:cursor-pointer"
+                  >
+                    {detail.fav?.[detail.data[0]?.idDrink] ? "❤️" : "🤍"}
+                    <span className="fav-text mx-3 my-3 text-[32px] text-[#9C0000]">
+                      {detail.fav?.[detail.data[0]?.idDrink]
+                        ? "Remove from favorites"
+                        : "Save to my favorite"}
+                    </span>
+                    {detail.fav?.[detail.data[0]?.idDrink] ? "❤️" : "🤍"}
+                  </button>
+                </div>
               </div>
               <div className="detail bg-[#e0e0e0] rounded-[5%]">
                 <div className="bg-[#e0e0e0]  mx-10">
@@ -87,7 +130,7 @@ function DetailPage() {
                   <div className="text-[20px] font-light">
                     {detail.data[0]?.strInstructions}
                   </div>
-                  <div className="grid grid-cols-2 mt-8">
+                  <div className="grid grid-cols-1 mt-8 xl:grid-cols-2 md:grid-cols-1 sm:grid-cols-1">
                     <div>
                       <div className="text-[28px]">Cocktail Type</div>
                       <div className="text-[18px] font-light mb-4">
@@ -102,9 +145,10 @@ function DetailPage() {
                         • {detail.data[0]?.strAlcoholic}
                       </div>
                     </div>
-                    <div className="ml-[20px]">
+                    <div className="">
                       <div className="text-[28px]">Ingredients</div>
                       <div>• {detail.data[0]?.strIngredient1}</div>
+
                       {detail.data[0]?.strIngredient2 && (
                         <div>• {detail.data[0]?.strIngredient2}</div>
                       )}
@@ -134,7 +178,44 @@ function DetailPage() {
           )}
         </div>
       </section>
-      <section className="bg-[#e0e0e0] h-[500px]"></section>
+      <section className="more-like-this bg-[#e0e0e0] py-6 flex flex-col">
+        <div className="more-font mx-[95px] mb-4 flex justify-between items-center">
+          <h1 className="text-[24px] text-[#9C0000]">You Might Also Like</h1>
+        </div>
+        <div className="flex flex-row justify-between items-center mx-[95px] gap-5 mb-10">
+          <button
+            onClick={handleBack}
+            className="bg-[#9C0000] text-white rounded-lg cursor-pointer hover:bg-[#4D0000]"
+          >
+            <div className="mx-2 my-1">Back</div>
+          </button>
+          <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 md:grid-cols-1 gap-10 overflow-hidden">
+            {suggested
+              .slice(currentIndex, currentIndex + itemsPerPage)
+              .map((item) => (
+                <div
+                  key={item.idDrink}
+                  className="w-[auto] bg-[#4D0000] rounded-xl shadow-md hover:scale-90 cursor-pointer"
+                  onClick={() => navigate(`/detail/${item.strDrink}`)}
+                >
+                  <img
+                    src={item.strDrinkThumb}
+                    className="rounded-t-xl w-full object-cover"
+                  />
+                  <div className="name flex justify-center items-center font-bold text-[#f2a333;] text-[25px] h-[100px] w-auto">
+                    {item.strDrink}
+                  </div>
+                </div>
+              ))}
+          </div>
+          <button
+            onClick={handleNext}
+            className="bg-[#9C0000] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#4D0000]"
+          >
+            <div className="mx-2 my-1">Next</div>
+          </button>
+        </div>
+      </section>
     </div>
   );
 }

@@ -89,4 +89,10 @@
 .name{
   font-family: "Montserrat", sans-serif;
   font-weight: 700;
+  padding: 20px;
+}
+.more-font{
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  padding: 20px 0;
 }

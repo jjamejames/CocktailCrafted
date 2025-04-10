@@ -6,9 +6,10 @@ const CocktailStore = {
   cocktail: {
     data: [],
     loading: false,
-    error: null
+    error: null,
+    fav: false
   },
-};
+}
 export type cocktailTypeByIngredients = {
   data: DrinkForIngredients[];
   loading: boolean;
