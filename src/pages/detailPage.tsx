@@ -1,9 +1,10 @@
-import {  useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { searchByNameAPI, searchByTypeAPI } from "../api";
 import { useEffect, useState } from "react";
 import { HashLoader } from "react-spinners";
 import { CocktailProps } from "./homePage";
 import { DrinkForIngredients } from "../interfaces/IIngredients";
+import { Drink } from "../interfaces/IRandom";
 
 function DetailPage() {
   const [detail, setDetail] = useState<CocktailProps>(() => {
@@ -27,7 +28,7 @@ function DetailPage() {
     try {
       setDetail((prev) => ({ ...prev, loading: true }));
       const res = await searchByNameAPI.getDetailByName(name);
-      const drinks = res.data?.drinks || [];
+      const drinks = res.data?.drinks as Drink[];
       const storeFavs = localStorage.getItem("favoritesCocktails");
       const favorites = storeFavs ? JSON.parse(storeFavs) : {};
       setDetail({ data: drinks, loading: false, error: null, fav: favorites });

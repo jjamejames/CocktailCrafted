@@ -1,6 +1,7 @@
 export interface DetailResponse{
-    drinks: Drink[]
+    drinks: Drink[] | Drink
 }
+
 export interface Drink {
     idDrink: string
     strDrink: string
