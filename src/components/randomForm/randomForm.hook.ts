@@ -13,7 +13,7 @@ export const useRandomForm = () => {
     const storeFavs = localStorage.getItem("favoritesCocktails");
     return {
       data: null,
-      loading: true,
+      loading: false,
       error: null,
       fav: storeFavs ? JSON.parse(storeFavs) : {},
     };

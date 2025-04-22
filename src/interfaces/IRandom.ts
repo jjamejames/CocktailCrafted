@@ -1,5 +1,5 @@
 export interface DetailResponse{
-    drinks: Drink[] | Drink
+    drinks: Drink[]
 }
 
 export interface Drink {

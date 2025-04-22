@@ -73,14 +73,7 @@ function FavoritePage() {
           Back Home
         </div>
       </button>
-      {favCocktails.data.length === 0 && (
-        <div className="bg-white h-[400px] flex justify-center">
-          <h1 className="name flex justify-center items-center text-[40px] font-bold text-[#f2a333;]">
-            0 favorite found
-          </h1>
-        </div>
-      )}
-      {favCocktails.loading && (
+      {favCocktails.loading ? (
         <div className="h-[600px] flex justify-center items-center">
           <HashLoader
             color="gray"
@@ -90,8 +83,7 @@ function FavoritePage() {
             data-testid="loader"
           ></HashLoader>
         </div>
-      )}
-      {!favCocktails.loading && (
+      ) : favCocktails.data.length > 0 ? (
         <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 md:grid-cols-1 gap-15 mb-15">
           {favCocktails?.data?.map((cocktail) => {
             return (
@@ -103,6 +95,12 @@ function FavoritePage() {
               ></FavCocktailCard>
             );
           })}
+        </div>
+      ) : (
+        <div className="bg-white h-[400px] flex justify-center">
+          <h1 className="name flex justify-center items-center text-[40px] font-bold text-[#f2a333;]">
+            0 favorite found
+          </h1>
         </div>
       )}
     </div>
