@@ -186,7 +186,7 @@ function DetailPage() {
         <div className="flex flex-row justify-between items-center mx-[95px] gap-5 mb-10">
           <button
             onClick={handleBack}
-            className="bg-[#9C0000] text-white rounded-lg cursor-pointer hover:bg-[#4D0000]"
+            className="bg-[#9C0000] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#4D0000]"
           >
             <div className="mx-2 my-1">Back</div>
           </button>
